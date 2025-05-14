@@ -1,10 +1,30 @@
-// import { animate, waapi } from 'animejs'
-import { Accordion, HStack, RadioCard, Span, Stack } from '@chakra-ui/react'
-// import { useEffect } from "react"
+import { animate, createScope, createSpring, waapi } from 'animejs'
+import { Accordion, Box, Center, HStack, RadioCard, Span, Stack } from '@chakra-ui/react'
+import { useEffect, useRef } from "react"
 
 export default function App() {
+  const root = useRef(null)
+  const scope = useRef(null)
+  // bouncing animation
+  // scopes to wherever 'root' is (name can be different)
+  // check animejs for more info
+  // span needed to animate text with Chakra
+  useEffect(() => {
+    scope.current = createScope({ root }).add( self => {
+      animate('.animate-me', {
+        scale: [
+          { to: 1.5, ease: 'inOut(3)', duration: 200 },
+          { to: 1, ease: createSpring({ stiffness: 300 }) }
+        ],
+        loop: true,
+        loopDelay: 250,
+      })
+    })
+    return () => scope.current.revert()
+  }, [])
+
   // list of categories and their counts
-  const cats = [
+  const cats: { title: string; count: number }[] = [
     {title: "Action", count: 8},
     {title: "Drama", count: 8},
     {title: "Fun", count: 8},
@@ -13,7 +33,13 @@ export default function App() {
   ]
 
   return (
-      <GenerateCategories cats={cats} />
+    <div ref={root}>
+    <Center>
+      <Box w="100%" maxWidth="98%">
+        <GenerateCategories cats={cats} />
+      </Box>
+    </Center>
+    </div>
   )
 }
 
@@ -26,7 +52,7 @@ const GenerateCategories = ({ cats }) => {
         <Accordion.Item key={index} value={cat.title}>
           <Accordion.ItemTrigger>
             <Span flex="1">{cat.title}</Span>
-            <Accordion.ItemIndicator />
+            <Accordion.ItemIndicator className="animate-me"/>
           </Accordion.ItemTrigger>
           <Accordion.ItemContent>
             <Accordion.ItemBody>
@@ -39,7 +65,7 @@ const GenerateCategories = ({ cats }) => {
   )
 }
 
-// construct video radio cards for each video in the given category
+// construct radio cards for each video in the given category
 // input = title of category, number of videos in that category
 const GenerateVoting = ({ title, count }) => {
   return (
@@ -54,7 +80,9 @@ const GenerateVoting = ({ title, count }) => {
           defaultValue="next"
         >
           <HStack>
-            <RadioCard.Label minWidth="60px" fontSize="2em" color="blue">{title}{row+1}</RadioCard.Label>
+            <RadioCard.Label minWidth="60px" fontSize="2em" color="blue">
+              <Span className="animate-me">{title}{row+1}</Span>
+            </RadioCard.Label>
             {Array.from({ length: 5 }, (_, col) => (
               <RadioCard.Item key={`${title}-${row+1}-${col+1}`} value={col+1}>
                 <RadioCard.ItemHiddenInput />
