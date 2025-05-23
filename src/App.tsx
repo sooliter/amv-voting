@@ -64,7 +64,7 @@ export default function App() {
         <Drawer.Root
           open={!!openSection}
           placement="top"
-          onOpenChange={(openSection) => setOpenSection(!!openSection ? openSection : null)}
+          onOpenChange={(details: {open: boolean}) => {if (!details.open) { setOpenSection(null); }}}
           size="md"
           lazyMount
         >
@@ -174,6 +174,7 @@ const GenerateVoting = memo(
               {Array.from({ length: 5 }, (_, col) => (
                 <RadioCard.Item
                   key={`${section}-${col + 1}`}
+                  value={`${col + 1}`}
                   className={`${section}-${col + 1}`}
                 >
                   <RadioCard.ItemHiddenInput />
