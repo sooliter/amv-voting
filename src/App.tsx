@@ -12,7 +12,7 @@ import {
   Span,
   Stack,
 } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 
 // list of categories and their counts
 const cats: { title: string; count: number }[] = [
@@ -47,24 +47,28 @@ export default function App() {
 
   // track votes per category
   const [votedSections, setVotedSections] = useState<{
-    [category: string]: Set<string>;
+    [category: string]: string[];
   }>({});
 
   // drawers
   const [openSection, setOpenSection] = useState<string | null>(null);
 
-  const handleOpen = (section: string) => setOpenSection(section);
+  const handleOpen = useCallback((section: string) => {
+    setOpenSection(section);
+  }, []);
 
-  const handleVote = (category: string, section: string) => {
+  const handleVote = useCallback((category: string, section: string) => {
     setVotedSections((prev) => {
-      const currentSet = new Set(prev[category] || []);
-      if (!currentSet.has(section)) {
-        currentSet.add(section);
-        return { ...prev, [category]: currentSet };
+      const currentVotes = prev[category] || [];
+      if (!currentVotes.includes(section)) {
+        return {
+          ...prev,
+          [category]: [...currentVotes, section],
+        };
       }
       return prev;
     });
-  };
+  }, []);
 
   return (
     <div /*ref={root}*/>
@@ -81,7 +85,7 @@ export default function App() {
       {/* GLOBAL DRAWER, only mounted when openSection != null */}
       {openSection && (
         <Drawer.Root
-          open={openSection === null ? false : true}
+          open={!!openSection}
           placement="top"
           onOpenChange={(openSection) => setOpenSection(openSection.open)}
           size="md"
@@ -113,11 +117,11 @@ export default function App() {
 
 // construct accordions for each category
 // input = list of categories and their counts
-const GenerateCategories = ({ cats, votedSections, onVote, onOpen }) => {
+const GenerateCategories = memo(({ cats, votedSections, onVote, onOpen }) => {
   return (
     <Accordion.Root multiple variant="subtle">
       {cats.map((cat, index) => {
-        const currentCount = votedSections[cat.title]?.size || 0;
+        const currentCount = votedSections[cat.title]?.length || 0;
         const isComplete = currentCount === cat.count;
         return (
           <Accordion.Item key={index} value={cat.title}>
@@ -146,11 +150,11 @@ const GenerateCategories = ({ cats, votedSections, onVote, onOpen }) => {
       })}
     </Accordion.Root>
   );
-};
+});
 
 // construct radio cards for each video in the given category
 // input = title of category, number of videos in that category
-const GenerateVoting = ({ title, category, count, onVote, onOpen }) => {
+const GenerateVoting = memo(({ title, category, count, onVote, onOpen }) => {
   return (
     <Stack>
       {Array.from({ length: count }, (_, row) => {
@@ -191,4 +195,4 @@ const GenerateVoting = ({ title, category, count, onVote, onOpen }) => {
       })}
     </Stack>
   );
-};
+});
