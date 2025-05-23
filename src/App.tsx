@@ -1,18 +1,16 @@
-import { animate, createScope, createSpring, waapi } from "animejs";
 import {
   Accordion,
   Badge,
   Box,
   Center,
   Drawer,
-  For,
   HStack,
   Portal,
   RadioCard,
   Span,
   Stack,
 } from "@chakra-ui/react";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useState } from "react";
 
 // list of categories and their counts
 const cats: { title: string; count: number }[] = [
@@ -24,27 +22,6 @@ const cats: { title: string; count: number }[] = [
 ];
 
 export default function App() {
-  /*const root = useRef(null);
-  const scope = useRef(null);
-  // useEffect for animation
-  // scopes to wherever 'root' is (name can be different)
-  // check animejs for more info
-  // span needed to animate text with Chakra
-  useEffect(() => {
-    scope.current = createScope({ root }).add((self) => {
-      // bouncy expand/contract
-      animate(".animate-me", {
-        scale: [
-          { to: 1.5, ease: "inOut(3)", duration: 200 },
-          { to: 1, ease: createSpring({ stiffness: 300 }) },
-        ],
-        loop: true,
-        loopDelay: 250,
-      });
-    });
-    return () => scope.current.revert();
-  }, []);*/
-
   // track votes per category
   const [votedSections, setVotedSections] = useState<{
     [category: string]: string[];
@@ -180,7 +157,6 @@ const GenerateVoting = memo(({ title, category, count, onVote, onOpen }) => {
               {Array.from({ length: 5 }, (_, col) => (
                 <RadioCard.Item
                   key={`${section}-${col + 1}`}
-                  value={col + 1}
                   className={`${section}-${col + 1}`}
                 >
                   <RadioCard.ItemHiddenInput />
