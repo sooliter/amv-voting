@@ -64,7 +64,7 @@ export default function App() {
         <Drawer.Root
           open={!!openSection}
           placement="top"
-          onOpenChange={(openSection) => setOpenSection(openSection.open)}
+          onOpenChange={(open: boolean) => setOpenSection(open ? openSection : null)}
           size="md"
           lazyMount
         >
@@ -92,9 +92,17 @@ export default function App() {
   );
 }
 
+type GenerateCategoriesProps = {
+  cats: { title: string; count: number }[];
+  votedSections: { [category: string]: string[] };
+  onVote: (category: string, section: string) => void;
+  onOpen: (section:string) => void;
+};
+
 // construct accordions for each category
 // input = list of categories and their counts
-const GenerateCategories = memo(({ cats, votedSections, onVote, onOpen }) => {
+const GenerateCategories = memo(
+  ({ cats, votedSections, onVote, onOpen }: GenerateCategoriesProps) => {
   return (
     <Accordion.Root multiple variant="subtle">
       {cats.map((cat, index) => {
@@ -129,9 +137,18 @@ const GenerateCategories = memo(({ cats, votedSections, onVote, onOpen }) => {
   );
 });
 
+type GenerateVotingProps = {
+  title: string;
+  category: string;
+  count:number;
+  onVote: (category: string, section: string) => void;
+  onOpen: (section: string) => void;
+};
+
 // construct radio cards for each video in the given category
 // input = title of category, number of videos in that category
-const GenerateVoting = memo(({ title, category, count, onVote, onOpen }) => {
+const GenerateVoting = memo(
+  ({ title, category, count, onVote, onOpen }: GenerateVotingProps) => {
   return (
     <Stack>
       {Array.from({ length: count }, (_, row) => {
