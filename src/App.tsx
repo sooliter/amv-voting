@@ -64,7 +64,7 @@ export default function App() {
         <Drawer.Root
           open={!!openSection}
           placement="top"
-          onOpenChange={(open: boolean) => setOpenSection(open ? openSection : null)}
+          onOpenChange={(openSection) => setOpenSection(!!openSection ? openSection : null)}
           size="md"
           lazyMount
         >
